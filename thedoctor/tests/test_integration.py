@@ -43,3 +43,12 @@ def test_lambda_validator():
         return a + b
     assert raises(ValidationError, func, 1, 3)
     assert func(1, 2) == 3
+
+def instance_method_test():
+    class Test(object):
+        @validate(_return=lambda x : true(x % 2 == 0, "return must be even"), a=int, b=int)
+        def func(self, a, b):
+            return a + b
+    t = Test()
+    assert raises(ValidationError, t.func, 1, 2)
+    t.func(2,4)
