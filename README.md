@@ -73,7 +73,7 @@ So we provide a `true` function which can be used as such
 ```
 from thedoctor import validate
 from thedoctor.validators import true
-@validate(a=lambda x : true(x % 2 == 0), "Must be even")
+@validate(a=lambda x : true(x % 2 == 0, "Must be even"))
 def func(a):
     pass
 ```
