@@ -38,8 +38,9 @@ def test_return_validator():
 
 
 def test_lambda_validator():
-    @validate(_all=true(lambda x : x['a'] + x['b'] == 3, "must sum to 3"))
+    @validate(_all=lambda x : true(x['a'] + x['b'] == 3, "must sum to 3"))
     def func(a,b):
         return a + b
     assert raises(ValidationError, func, 1, 3)
     assert func(1, 2) == 3
+    func(1,4)

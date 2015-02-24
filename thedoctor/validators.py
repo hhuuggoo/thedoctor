@@ -7,14 +7,12 @@ def check_type(types):
             raise ValidationError("Not a member of %s", str(types))
     return checktype
 
-def true(func, message):
+def true(val, message):
     """returns a function which returns a validation error with message
     if func returns False
     """
-    def _true(x):
-        if not func(x):
-            raise ValidationError(message)
-    return _true
+    if not val:
+        raise ValidationError(message)
 
 def broadcastable(*names):
     """returns a function - this function takes a dict of args
