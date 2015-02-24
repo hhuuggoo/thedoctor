@@ -9,6 +9,9 @@ class ValidationError(Exception):
     pass
 
 def arg_dict(func, args, kwargs):
+    """Given a function and the args/kwargs that it is called with,
+    construct the dictionary mapping arument names to argument values
+    """
     all_args = {}
     arg_names, vararg_name, keyword_name, defaults = inspect.getargspec(func)
     arg_names_set = set(arg_names)
