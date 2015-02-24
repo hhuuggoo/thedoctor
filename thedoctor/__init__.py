@@ -1,6 +1,12 @@
 from functools import wraps
 import inspect
 import warnings
+import logging
+import os
+
+logger = logging.getLogger(__name__)
+class ValidationError(Exception):
+    pass
 
 def arg_dict(func, args, kwargs):
     all_args = {}
@@ -55,11 +61,76 @@ def arg_dict(func, args, kwargs):
 
     return all_args
 
+def _postprocess(obj):
+    """We support convenient ways of specifying dependencies.
+    field=[func1, func2, func3]
+    field=(type1, type2)
+    field = [(type1, type2), func2]
+    field=func1
+    this function converts all specifications of deps into a list of functions
+    """
+    from .validators import check_type
+    if not isinstance(obj, list):
+        obj = [obj]
+    callbacks = []
+    for spec in obj:
+        if hasattr(spec, '__call__') and not isinstance(spec, type):
+            callbacks.append(spec)
+            continue
+        if isinstance(spec, (tuple, type)):
+            callbacks.append(check_type(spec))
+        else:
+            raise ValidationError("unknown specification %s" % spec)
+    return callbacks
+
+def niceprint(obj, limit=1000):
+    return str(obj)[:limit]
+
 def validate(**validators):
+    def passthrough(func):
+        return func
+    if os.environ.get('NO_DOCTOR'):
+        return passthrough
+
+    for k in validators.keys():
+        validators[k] = _postprocess(validators[k])
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            #validate here
-            return func(*args, **kwargs)
+            all_args = arg_dict(func, args, kwargs)
+            if all_args is None:
+                #should return an exception
+                #all_args is None if the call sig is wrong
+                return func(*args, **kwargs)
+            all_validator = validators.get('_all', [])
+            return_validator = validators.get('_return', [])
+            #TODO refactor this func callling code
+            for k,v in validators.items():
+                if k in {'_all', '_return'}:
+                    continue
+                for validator in v:
+                    try:
+                        validator(all_args[k])
+                    except ValidationError as e:
+                        logger.error("Error validating arg: %s, value: %s, on function %s",
+                                     k, niceprint(all_args[k]), func.__name__)
+                        logger.exception(e)
+                        raise
+            for validator in all_validator:
+                try:
+                    validator(all_args)
+                except Exception as e:
+                    logger.error("Error validating all args of %s", func.__name__)
+                    logger.exception(e)
+                    raise
+            retval = func(*args, **kwargs)
+            for validator in return_validator:
+                try:
+                    validator(retval)
+                except Exception as e:
+                    logger.error("Error validating return value of %s", func.__name__)
+                    logger.exception(e)
+                    raise
+            return retval
         return wrapper
     return decorator
