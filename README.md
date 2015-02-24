@@ -64,6 +64,15 @@ def process(first, second, third):
     pass
 ```
 
+#### Check numpy broadcastability
+check for singular matrices
+```
+from thedoctor import validate
+from thedoctor.validators import nonsingular
+@validate(first=nonsingular)
+def process(first, second, third):
+    pass
+```
 #### validators using lambdas
 
 Sometimes it can be convenient to write ad-hoc validators as lambda functions.
