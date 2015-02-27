@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from ..validators import check_type, nonsingular, broadcastable, has
+from ..validators import check_type, nonsingular, broadcastable, has, dict_validator, true
 from .. import ValidationError
 from .utils import raises
 
@@ -39,3 +39,11 @@ def test_has():
     func(data)
     func = has('a','dd')
     assert raises(ValidationError, func, data)
+
+def test_dict_validator():
+    good_dict = {'a' : 1, 'b' : 2, 'c' : [1,2,3,4]}
+    bad_dict = {'a' : 1, 'c' : [1,2,3,4]}
+    validators = dict(b=lambda x : true(x is not None, "must be present"))
+    func = dict_validator(validators)
+    func(good_dict)
+    assert raises(ValidationError, func, bad_dict)

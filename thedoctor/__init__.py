@@ -89,6 +89,23 @@ def _postprocess(obj):
 def niceprint(obj, limit=1000):
     return str(obj)[:limit]
 
+def run_validate(func, arg, msg, msg_params):
+    try:
+        func(arg)
+    except ValidationError as e:
+        logger.error(msg, *msg_params)
+        logger.exception(e)
+        raise
+
+def _dict_validate(validators, inputs, msg):
+    """validators - dict of validator function lists
+    msg - logger message, containing 2 %s for k,v
+    """
+    for k,v in validators.items():
+        for validator in v:
+            value = inputs.get(k)
+            run_validate(validator, value, msg, (k, niceprint(value)))
+
 def validate(**validators):
     def passthrough(func):
         return func
@@ -97,7 +114,11 @@ def validate(**validators):
 
     for k in validators.keys():
         validators[k] = _postprocess(validators[k])
+    all_validator = validators.pop('_all', [])
+    return_validator = validators.pop('_return', [])
     def decorator(func):
+        dict_error_message = "Error validating arg: %%s, value: %%s, on function %s"
+        dict_error_message = dict_error_message % func.__name__
         @wraps(func)
         def wrapper(*args, **kwargs):
             all_args = arg_dict(func, args, kwargs)
@@ -105,35 +126,16 @@ def validate(**validators):
                 #should return an exception
                 #all_args is None if the call sig is wrong
                 return func(*args, **kwargs)
-            all_validator = validators.get('_all', [])
-            return_validator = validators.get('_return', [])
-            #TODO refactor this func callling code
-            for k,v in validators.items():
-                if k in {'_all', '_return'}:
-                    continue
-                for validator in v:
-                    try:
-                        validator(all_args[k])
-                    except ValidationError as e:
-                        logger.error("Error validating arg: %s, value: %s, on function %s",
-                                     k, niceprint(all_args[k]), func.__name__)
-                        logger.exception(e)
-                        raise
+            _dict_validate(validators, all_args, dict_error_message)
             for validator in all_validator:
-                try:
-                    validator(all_args)
-                except Exception as e:
-                    logger.error("Error validating all args of %s", func.__name__)
-                    logger.exception(e)
-                    raise
+                run_validate(validator, all_args,
+                             "Error validating all args of %s",
+                             (func.__name__,))
             retval = func(*args, **kwargs)
             for validator in return_validator:
-                try:
-                    validator(retval)
-                except Exception as e:
-                    logger.error("Error validating return value of %s", func.__name__)
-                    logger.exception(e)
-                    raise
+                run_validate(validator, retval,
+                             "Error validating return value of %s, on function %s",
+                             (niceprint(retval), func.__name__))
             return retval
         return wrapper
     return decorator

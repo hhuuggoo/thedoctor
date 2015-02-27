@@ -1,4 +1,4 @@
-from . import ValidationError
+from . import ValidationError, _postprocess, _dict_validate
 def check_type(types):
     """Returns a function that checks whether an object matches types
     """
@@ -47,3 +47,11 @@ def has(*names):
             if n not in obj:
                 raise ValidationError("Value missing %s field", n)
     return _has
+
+def dict_validator(validators):
+    for k in validators.keys():
+        validators[k] = _postprocess(validators[k])
+    msg = "Error validating key: %s, value: %s"
+    def _dict_validator(input_dict):
+        _dict_validate(validators, input_dict, msg)
+    return _dict_validator

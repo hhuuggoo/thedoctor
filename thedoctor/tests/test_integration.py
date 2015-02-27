@@ -1,7 +1,7 @@
 from .. import validate
 from .utils import raises
 from .. import ValidationError
-from ..validators import true
+from ..validators import true, dict_validator
 
 def test_integration():
     @validate(a=int, b=int)
@@ -52,3 +52,10 @@ def instance_method_test():
     t = Test()
     assert raises(ValidationError, t.func, 1, 2)
     t.func(2,4)
+
+def dict_validator_integration_test():
+    @validate(x=dict_validator({'name' : lambda x : true(x == 'sally', 'must be sally')}))
+    def func(x):
+        return x
+    assert raises(ValidationError, func, {'name' : 'bob'})
+    func({'name' : 'sally'})
