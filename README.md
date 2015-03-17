@@ -1,5 +1,7 @@
 ### thedoctor
-Python function input validation.  The main entrypoint is the `validate` decorator.  The `validate` decorator
+The doctor is a library that makes python function input validation easy.  The motivation is to make it easier to deal with large (often enterprise) code bases, where you look at a function and have no idea what it's supposed to take, or return.  Secondary motivation is to catch problems as early as possible in a stack trace.
+
+The main entrypoint is the `validate` decorator.  The `validate` decorator
 takes key word arguments, whose names should match the parameters to your function.  Each field accepts
 either a list of validators, or a single validator.  If a validator is specified as a type or a tuple, it
  is assumed that the intention is for type checking.  Validators are merely functions which take the
