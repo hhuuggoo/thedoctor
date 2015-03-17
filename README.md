@@ -1,5 +1,5 @@
 ### thedoctor
-The doctor is a library that makes python function input validation easy in attempt to keep large codebases sane.  The motivation is to make it easier to deal with large (often enterprise) code bases, where you look at a function and have no idea what it's supposed to take, or return.  Secondary motivation is to catch problems as early as possible in a stack trace.
+The doctor is a library that makes python function input validation easy in attempt to keep large codebases sane.  The motivation is to make it easier to deal with large (often enterprise) code bases, where you look at a function and have no idea what it's supposed to take, or return.  Secondary motivation is to catch problems as early as possible in a stack trace.  The library is intentionally tiny and easy to understand - the core is 141 lines and the additional lines are just optional convenient validator functions.
 
 The main entrypoint is the `validate` decorator.  The `validate` decorator
 takes key word arguments, whose names should match the parameters to your function.  Each field accepts
