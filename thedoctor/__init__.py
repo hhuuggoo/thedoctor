@@ -56,7 +56,7 @@ def arg_dict(func, args, kwargs):
     #handle **kwargs
     if keyword_name:
         kw_args = {}
-        for k,v in kwargs.iteritems():
+        for k,v in kwargs.items():
             if k not in all_args:
                 kw_args[k] = v
         all_args[keyword_name] = kw_args
