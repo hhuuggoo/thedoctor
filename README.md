@@ -11,6 +11,11 @@ either a list of validators, or a single validator.  If a validator is specified
  function parameters.  Finally there is a `_return` validator, which runs validation against the return
  value of your function
 
+### Installation
+
+- With conda: `conda install -c hugo thedoctor`
+- With pip:  `pip install thedoctor`
+
 ### Examples
 
 #### Simple Type Checking
