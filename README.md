@@ -93,3 +93,8 @@ from thedoctor.validators import true
 def func(a):
     pass
 ```
+
+### Disabling validation
+You can completely disable validation by setting the environment variable NO_DOCTOR before starting python.
+If that variable is set - the validate decorator will return the original function
+
