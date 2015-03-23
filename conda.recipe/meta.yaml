@@ -15,6 +15,18 @@ requirements:
 
   run:
     - python
+    - numpy
+
+test:
+  requires:
+    - nose
+    - flake8
+    - coverage
+    - pandas
+
+  commands:
+    - nosetests --with-doctest --with-coverage --cover-package=thedoctor
+    - flake8 thedoctor
 
 about:
   home: https://github.com/ContinuumIO/thedoctor
