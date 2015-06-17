@@ -38,15 +38,6 @@ def broadcastable(*names):
                 [getattr(x, 'shape', 'no shape') for x in arrs])
     return _broadcastable
 
-
-def nonsingular(matrix):
-    """checks whether a matrix is singular
-    """
-    import numpy as np
-    if np.linalg.matrix_rank(matrix) == 0:
-        raise ValidationError("Matrix is singular")
-
-
 def has(*names):
     """checks whether a dict or dataframe has certain fields (names)
     """
