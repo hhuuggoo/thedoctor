@@ -5,10 +5,6 @@ package:
 source:
   git_url: git@github.com:hhuuggoo/thedoctor.git
 
-build:
-  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
-  string: py{{environ.get('PY_VER').replace('.', '')}}_{{ environ.get('GIT_BUILD_STR', 'GIT_STUB') }}
-
 requirements:
   build:
     - python
@@ -30,5 +26,5 @@ test:
     - flake8 thedoctor
 
 about:
-  home: https://github.com/ContinuumIO/thedoctor
+  home: https://github.com/hhuuggoo/thedoctor
   license: BSD
