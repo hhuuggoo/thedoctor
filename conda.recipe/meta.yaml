@@ -1,6 +1,6 @@
 package:
   name: thedoctor
-  version: 0.2
+  version: 0.3
 
 source:
   git_url: git@github.com:hhuuggoo/thedoctor.git
