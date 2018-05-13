@@ -77,7 +77,9 @@ def validate(**validators):
         sig = inspect.signature(func)
         @wraps(func)
         def wrapper(*args, **kwargs):
-            all_args = sig.bind(*args, **kwargs).arguments
+            call = sig.bind(*args, **kwargs)
+            call.apply_defaults()
+            all_args = call.arguments
             if all_args is None:
                 # should return an exception
                 # all_args is None if the call sig is wrong
