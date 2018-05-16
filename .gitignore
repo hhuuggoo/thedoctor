@@ -55,3 +55,4 @@ target/
 
 *#
 *pyc
+nohup.out

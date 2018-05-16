@@ -1,14 +1,16 @@
+import functools
 from . import ValidationError, _dict_validate, _postprocess
 
 
-def check_type(types):
+def typecheck(types, x):
+    if not isinstance(x, types):
+        raise ValidationError("Not a member of %s", str(types))
+
+
+def typechecker(types):
     """Returns a function that checks whether an object matches types
     """
-
-    def checktype(x):
-        if not isinstance(x, types):
-            raise ValidationError("Not a member of %s", str(types))
-    return checktype
+    return functools.partial(typecheck, types)
 
 
 def true(val, message):

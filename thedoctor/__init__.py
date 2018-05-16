@@ -20,7 +20,7 @@ def _postprocess(obj):
     field=func1
     this function converts all specifications of deps into a list of functions
     """
-    from .validators import check_type
+    from .validators import typechecker
     if not isinstance(obj, list):
         obj = [obj]
     callbacks = []
@@ -29,7 +29,7 @@ def _postprocess(obj):
             callbacks.append(spec)
             continue
         if isinstance(spec, (tuple, type)):
-            callbacks.append(check_type(spec))
+            callbacks.append(typechecker(spec))
         else:
             raise ValidationError("unknown specification %s" % spec)
     return callbacks
